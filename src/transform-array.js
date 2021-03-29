@@ -1,38 +1,41 @@
 const CustomError = require("../extensions/custom-error");
 
-module.exports = function transform(/*arr*/) {
-  throw new CustomError('Not implemented');
-  /*
+module.exports = function transform(arr) {
+  console.log(arr);
   if (!Array.isArray(arr)) {
-    return false;
+    throw new Error();
   } 
-  let x = "";
-  let indexX = 0;
-  const arrNew = arr.slice();
+  const arrNew = [];
   
-  for (let i = 0; i < arrNew.length; i++) {
-    if (typeof arrNew[i] === "string") {
-      x = arrNew[i];
-      indexX = i;
-    }
+  for (let i = 0; i < arr.length; i++) {
+    
+    switch(arr[i]) {
+      case '--discard-prev':        
+        if ((i !== 0) || (arr[i-2] !== '--discard-next')) {
+             arrNew.pop();          
+        }
+      break;        
+      case '--discard-next':
+        if (arr[i + 1] !== undefined) {
+          i+=1;
+        }        
+      break;
+      case '--double-prev':
+        if ((i == 0) || (arr[i-2] == '--discard-next')) {
+          continue;                    
+        } else {
+          arrNew.push(arr[i - 1]); 
+        }      
+      break;
+      case '--double-next':
+        if (arr[i + 1] !== undefined) {
+          arrNew.push(arr[i+1]);
+        }
+      break;      
+      default:
+        arrNew.push(arr[i]);
+    } 
+    
   }
-
-  switch(x) {
-  case '--discard-next':
-      arrNew.splice(indexX,2);
-    break;
-  case '--discard-prev': 
-      arrNew.splice(indexX - 1 ,2);
-    break;
-  case '--double-next':
-      arrNew.splice(indexX, 1, arrNew[indexX + 1]);
-    break;
-  case '--double-prev':
-      arrNew.splice(indexX, 1, arrNew[indexX - 1]);
-    break;
-  }
-    console.log(arr);  
-   return arrNew; 
-*/
-
+  return arrNew;
 };
